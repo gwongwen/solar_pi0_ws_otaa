@@ -3,6 +3,9 @@ import threading, time, subprocess, busio, board, adafruit_ssd1306, adafruit_bmp
 from digitalio import DigitalInOut, Direction, Pull
 from adafruit_tinylora.adafruit_tinylora import TTN, TinyLoRa
 from pathlib import Path
+from radom import randrange
+sys.path.insert(0, '/home/pi/solar_pi0_ws_otaa/04-lorawan')
+import MHDR
 
 # updates the sleep time on the environment and on the 
 # .env.dynamic file
