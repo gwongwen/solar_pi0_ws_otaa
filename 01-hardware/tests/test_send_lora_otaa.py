@@ -7,58 +7,23 @@ from SX127x.LoRaArgumentParser import LoRaArgumentParser
 from SX127x.board_config import BOARD
 sys.path.insert(0, '/home/pi/solar_pi0_ws_otaa/04-lorawan')
 from LoRaWAN.MHDR import MHDR
-from random import randrange
 import adafruit_bmp3xx, board
 
 BOARD.setup()
 parser = LoRaArgumentParser("LoRaWAN sender")
 
 class LoRaWANotaa(LoRa):
-    def __init__(self, verbose = False):
-        super(LoRaWANotaa, self).__init__(verbose)
-
-    def on_rx_done(self):
-        print("RxDone")
-
-        self.clear_irq_flags(RxDone=1)
-        payload = self.read_payload(nocheck=True)
-
-        lorawan = LoRaWAN.new([], appkey)
-        lorawan.read(payload)
-        print(lorawan.get_payload())
-        print(lorawan.get_mhdr().get_mversion())
-
-        if lorawan.get_mhdr().get_mtype() == MHDR.JOIN_ACCEPT:
-            print("Got LoRaWAN join accept")
-            print(lorawan.valid_mic())
-            print(lorawan.get_devaddr())
-            print(lorawan.derive_nwskey(devnonce))
-            print(lorawan.derive_appskey(devnonce))
-            print("\n")
-            sys.exit(0)
-
-        print("Got LoRaWAN message continue listen for join accept")
-
+    def __init__(self, devaddr = [], nwkey = [], appkey = [], verbose = False):
+        super(LoRaWANsend, self).__init__(verbose)
+        self.devaddr = devaddr
+        self.nwkey = nwkey
+        self.appkey = appkey
+    
     def on_tx_done(self):
+        self.set_mode(MODE.STDBY)
         self.clear_irq_flags(TxDone=1)
         print("TxDone")
-
-        self.set_mode(MODE.STDBY)
-        self.set_dio_mapping([0,0,0,0,0,0])
-        self.set_invert_iq(1)
-        self.reset_ptr_rx()
-        self.set_mode(MODE.RXCONT)
-
-    def start(self):
-        self.tx_counter = 1
-
-        lorawan = LoRaWAN.new(appkey)
-        lorawan.create(MHDR.JOIN_REQUEST, {'deveui': deveui, 'appeui': appeui, 'devnonce': devnonce})
-
-        self.write_payload(lorawan.to_raw())
-        self.set_mode(MODE.TX)
-        while True:
-            sleep(1)
+        sys.exit(0)
 
 def getPayloadMockBMP388():
     press_val = bmp.pressure
@@ -95,13 +60,8 @@ def encodePayload(pressure,temperature,altitude):
     return data
 
 def sendDataTTN(data):
-    #lora.send_data(data, len(data), lora.frame_counter)
-    #lora.frame_counter += 1
-    #display.fill(0)
-    #display.text('Packet sent', 10, 0, 1)
-    #display.show()
     lorawan = LoRaWAN.new(nwskey, appskey)
-    lorawan.create(MHDR.UNCONF_DATA_UP, {'devaddr': devaddr, 'fcnt': 1, 'data': list(map(ord, 'Python rules!')) })
+    lorawan.create(MHDR.UNCONF_DATA_UP, {'devaddr': devaddr, 'fcnt': 1, 'data': list(map(ord, data)) })
 
     self.write_payload(lorawan.to_raw(data))
     self.set_mode(MODE.TX)
@@ -144,5 +104,4 @@ for meas in range (0, 15, 1):
     packet = None
     sendDataTTN(getPayloadMockBMP388())
     print("packet sent!")
-
     time.sleep(2)
