@@ -1,9 +1,10 @@
 #! /usr/bin/env python3
 # test for parallel communication between sensor and radio bonnet i2c bus
 # version 1.0 - 19/11/21
+# version 1.1 - 25/11/21 (delete link buttons)
 
 import time, busio, board, adafruit_ssd1306, adafruit_bmp3xx
-from digitalio import DigitalInOut, Direction, Pull
+from digitalio import DigitalInOut
 from busio import I2C
 from time import sleep
  

@@ -1,7 +1,10 @@
-# Description of Solar Pi Platter board
+# Solar Pi Platter board: A Li-Ion charger Solar or USB with PMIC/RTC
+
+## Description of Solar Pi Platter board
+
 The Solar Pi Platter is a versatile expansion board for the Raspberry Pi Zero W computers that provides power from a single-cell rechargeable Lithium-Ion battery, additional peripherals including analog inputs, PWM outputs, USB ports and optional hardwired ethernet. A real-time clock allows for scheduled power cycling. Dual charging sources support both low-impedance devices like common USB chargers and high-impedance devices like solar panels. The Solar Pi Platter allows the Pi Zero to be used in a wide variety of applications ranging from solar-powered remote data acquisition systems to battery-backed file servers. See more and buy: http://danjuliodesigns.com/products/solar_pi_platter.html
 
-# Features of Solar Pi Platter board
+## Features of Solar Pi Platter board
 
     - Single-cell Lithium-Ion battery management system supplying up to 10W power at 5V
     - Low impedance charging input with Un-interruptible Power Supply (UPS) functionality
@@ -19,16 +22,28 @@ The Solar Pi Platter is a versatile expansion board for the Raspberry Pi Zero W 
     - User-accessible EEPROM configuration settings
     - Watchdog timer
 
+## Component selection of Solar Pi Platter board
+
+    - TI bq24210 Li-Ion charger supporting both high- and low-impedance power sources. Configured for a max 750 mA charge current to external battery. Support for an optional external thermistor (103AT-4 type) attached to the battery
+    - PIC16F1459 PMIC/RTC. Inexpensive micro-controller that supports a USB interface so the board can appear like a CDC-class serial port to the Pi. External 32 kHz crystal to support a very simple RTC (seconds since some point) and alarm-clock functionality to be able to wake the board up at a specific time. External power button to manually turn the board on (and off). Charge status, low-battery detection (and shut-down after warning), USB power fault detection. Two analog input pins and 2 PWM output pins for simple IO functions without requiring further connection to the Pi. The analog inputs can be referenced to an internal voltage reference or the PIC VDD
+    - TI tps61232 boost converter. Supplies up to 2 A @ 5volts for use by the rest of the system (USB/ethernet, Pi, Pi HAT and any attached USB devices). Note that you'll require beefy enough wiring from the battery to support this at full power output since you will be drawing 3+ A from the battery at lower battery voltages
+    - LAN9514 USB Hub/Ethernet controller. Not-so inexpensive controller compatible with the Pi and supported both USB and ethernet
+    - NCP382 USB power switches. Each USB connector has a separate power control allowing code running on the Pi to turn-on and off USB devices to save power. One connector has both outputs of the NCP382 ganged together for a nominal maximum output current of 2A. The other connectors are each connected to one NCP382 output for a max of 1 A current (this is the rated max of the NCP382 before it current limits)
+
 # Description of basic tests
+
 In basic tests folder, several tests written on python are purposed in order to test separently the  BMP388 sensor and the LoRa protocol. These tests come directly from the manufacturers.
 
 ## Test BMP388 sensor
+
 According to python3 is installed, run this script **test_bmp3xx.py** to check the pressure/temperature sensor. With coherent values, this means that the sensor is operating correctly.
 
 ## Test I2C bus in parallel mode
+
 According to python3 is installed, run the script **test_parallel_i2c.py** to check if I2C bus can work on parallel mode (screen display of Adafruit LoRa Radio Bonnet and BMP388 sensor). To verify that they are working properly, we just have to watch if on the screen display there is the same temperature as on the command line. If it is the case, and the temperature is not a nonesense, this would mean that your BMP388 sensor is measuring while the display is done, so it all works well. To verify if the values of your BMP388 sensor are real you can try to touch the sensor and the temperature should increase.
 
 ## Test LoRa chipset radio RFM95W and the TTN application
+
 According to python3 is installed, run these scripts to chipset radio (RFM95) and the TTN comunication :
     
     - test_rfm9x.py to check the Adafruit radio+oled Bonnet
@@ -39,6 +54,7 @@ To test the LoRa device (both sending and receiving), we need to execute the **t
 To verify that you receive the packets on your TTN application, run **test_send_lora.py**. After that, you have to paste the file **payload_format.js** into the TTN application decoder function so you can read the packets content in real time already decripted.
 
 # Description of datasheet/schematic/tutorial
+
 This folder contains datasheet of the only sensor of our project (Bosch's BMP388) and the LoRa chipset radio (RFM95W inlcude on Adafruit's LoRa Radio Bonnet).
 It also contains the schematic of the Solar Pi Platter board and differents tutorials in order to undertsand I2C bus and use Solar Pi Platter drivers. A brief description of Raspberry Pi Zero W  GPIO board is added.
 

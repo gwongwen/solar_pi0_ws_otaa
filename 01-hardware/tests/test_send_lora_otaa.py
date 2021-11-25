@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python3
+# test: send physical data from sensor to LoRaWAN TTN by OTAA identification
+# version 1.0 - 23/11/21
 
 import time, board, LoRaWAN
 from time import sleep

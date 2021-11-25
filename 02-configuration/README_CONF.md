@@ -6,34 +6,29 @@
 The script install can be found in the **02-configuration folder**. This script will enable the I2C and SPI interface, install the BMP388 requirements, the LoRa Radio Bonnet requirements and the Solar Pi Platter drivers (talkpp and ppd). When the script will be done, we recommend you to test both the LoRa module and the BMP388 sensor to verify that everything is working correctly.
 All tests can be found in the **01-hardware folder**. We invite you to read the **README_HARD.md** file present in this folder which describes hardware and software of this project.
 
-To run as sudo user, tape : **sudo \\.pp_config_install.sh** or **sudo bash pp_config_install.sh**
+To run as sudo user, tape : **sudo \\.pp_config_install.sh** or **sudo bash pp_config_install.sh**.
 
 ## Step 2 : Configuration of the TTN (The Things Network)
 
-To begin, we will need to login into the ttn (https://www.thethingsnetwork.org/) console. Once this is done (as our sensor is both a gateway and a sender) we need to create both a gateway and an application..
+To begin, we will need to login into the ttn (https://www.thethingsnetwork.org/) console. Once this is done (as our sensor is both a gateway and a sender) we need to create both a gateway and an application.
 
 ### Application (sender)
 
-You will need to register a new device in your application (with ABP activation method). Once this is done, retain the TTN Device Address(4 Bytes), the TTN Network Key(16 Bytes) and the TTN Application Key (16 Bytes). You also have to make sure that the activation method is ABP.
+You will need to register a new device in your application (with OTAA activation method). Once this is done, retain the End device ID (8 Bytes), the Apllication ID (8 Bytes) and the TTN Application Key (16 Bytes). You also have to make sure that the activation method is OTAA.
 
     - After you account was created, you have to create a new application : Name of this application --> solar-pi0-ws-app
 
-    - After that, you have to add a new end device on this application. You have to complete the various fields using the available file .env in 01-hardware/tests in manually mode :
+    - After that, you have to add a new end device on this application. You have to complete the various fields in manually mode :
         Frequency Plan                  Europe 863-870 MHz (SF9 for RX2 - Recommanded)
         LoRaWAN Version                 MAC V1.0.2
         Regional Parameter Version      PHY V1.0.2 REB B
-        Activation by personalization   ABP
+        Activation by personalization   OTAA
         Application ID                  solar-pi0-ws-app
-        DevUI                           70B3D57ED00485A9
-        Device                          26013D54
-        NwkSKey                         0FFEDF1D366D518976D776BB92A59AE9
-        AppSKey                         4AD7B63F86ABC754CF268EE560DE1C99
+        DevUI                           004764B1ABC64F7C
+        AppEUI                          70B3D57ED00485A9
+        AppKey                          4AD7B63F86ABC754CF268EE560DE1C99
 
-    - After that, you have to add a gateway :
-        Gateway ID              sola-pi0-ws-gtw
-        Gateway EUI             B827EBFFFF545376
-
-After the test (test_send_lora.py) purposed in **01-hardware/tests**, you have to paste the file payload_format into the TTN application decoder function so you can read the packets content in real time already decripted.
+After the test **test_send_lora_otaa.py** purposed in **01-hardware/tests**, you have to paste the file payload_format into the TTN application decoder function so you can read the packets content in real time already decripted.
 
 # Usage
 
@@ -50,7 +45,7 @@ In this project, we will use :
 
 ## Solar Pi Platter board
 
-**Todo** add details about the connectivity between the solar pi platter and the raspberry pi zero w
+Connectivity between the Solar Pi Platter board and the raspberry pi zero w is achieved by a simple ASCII character command set sent/received through a CDC-class serial port.
 
 ## Adafruit LoRa Radio Bonnet
 
@@ -63,16 +58,16 @@ The LoRa Radio Bonnet will be directly plugged into the board (as it is an all-e
     - CLK : Radio SPI Clock pin, connected to SPI SCLK on the Pi
     - DI : Radio SPI data in pin, connected to SPI MOSI on the Pi
     - DO : Radio SPI data out pin, connected to SPI MISO on the Pi
-    - DIO0 : Radio digital IO #0 pin, we use this for status or IRQs It's required for all our examples. Connected to GPIO 22 on the Pi.
+    - DIO0 : Radio digital IO #0 pin, we use this for status or IRQs It's required for all our examples. Connected to GPIO 22 on the Pi
     - DIO1 : Radio digital IO #1 pin, we use this for status. This is not used for our basic CircuitPython code, but is used by some more advanced libraries. You can cut this trace if you want to use the Pi pin for other devices. Connected to GPIO 23 on the Pi
     - DIO2 : Radio digital IO #2 pin, we use this for status. This is not used for our basic CircuitPython code, but is used by some more advanced libraries. You can cut this trace if you want to use the Pi pin for other devices. Connected to GPIO 24 on the Pi
-    - DIO3 : Radio digital IO #3, not connected or used at this time.
-    - DIO4 : Radio digital IO #3, not connected or used at this time.
+    - DIO3 : Radio digital IO #3, not connected or used at this time
+    - DIO4 : Radio digital IO #3, not connected or used at this time
 
 **(for the oled)**
 
-    - SCL is connected to SCL on the Pi.
-    - SDA is connected to SDA on the Pi.
+    - SCL is connected to SCL on the Pi
+    - SDA is connected to SDA on the Pi
 
 **(for the buttons)**
 
@@ -101,7 +96,7 @@ The LoRa Radio Bonnet will be directly plugged into the board (as it is an all-e
 
 ## BMP3xy breakout pinout
 
-**todo** Add comments when the daugther PCB for sensor will be made. The idea is to plug a board above the Adafruit LoRa bonnet with tne same pinout (GPIO of sytandard Pi Zero).
+**todo** Add comments when the daugther PCB for sensor will be made. The idea is to plug a board above the Adafruit LoRa bonnet with tne same pinout (GPIO of standard Pi Zero).
 
 
 # Documentation about talkpp/ppd drivers
@@ -116,7 +111,7 @@ It can communicate with the board via either the pseudo-tty /dev/pi-platter if t
 
 ### Dependencies install
 
-Install of libudev - API for enumerating and introspecting local devices
+Install of libudev - API for enumerating and introspecting local devices :
 
     sudo apt-get update
     sudo apt-get install libudev-dev
@@ -131,7 +126,7 @@ Both the source and a binary compiled under Raspbian Jessie are included.  The b
 
 ### Usage
 
-talkpp takes the following arguments:
+talkpp takes the following arguments :
 
     talkpp [-c <command string>]
 
@@ -175,7 +170,7 @@ It is important that software not open the hardware serial port, /dev/ttyACM<n>,
 
 ### Manual install
 
-Both the source and a binary compiled under Raspbian Jessie are included.  The binary can simply be downloaded and installed in /usr/local/bin.  The source is easily compiled in the directory containing the source file.
+Both the source and a binary compiled under Raspbian Jessie are included. The binary can simply be downloaded and installed in /usr/local/bin. The source is easily compiled in the directory containing the source file.
 
     gcc -o ppd ppd.c -ludev
     sudo cp ppd /usr/local/bin

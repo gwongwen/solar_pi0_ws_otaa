@@ -1,4 +1,6 @@
-== Description of Solar Pi Platter board
+== Solar Pi Platter board: A Li-Ion charger Solar or USB with PMIC/RTC
+
+=== Description of Solar Pi Platter board
 
 The Solar Pi Platter is a versatile expansion board for the Raspberry Pi
 Zero W computers that provides power from a single-cell rechargeable
@@ -11,7 +13,7 @@ used in a wide variety of applications ranging from solar-powered remote
 data acquisition systems to battery-backed file servers. See more and
 buy: http://danjuliodesigns.com/products/solar_pi_platter.html
 
-== Features of Solar Pi Platter board
+=== Features of Solar Pi Platter board
 
 ....
 - Single-cell Lithium-Ion battery management system supplying up to 10W power at 5V
@@ -29,6 +31,16 @@ buy: http://danjuliodesigns.com/products/solar_pi_platter.html
 - Programmable power-on default operation
 - User-accessible EEPROM configuration settings
 - Watchdog timer
+....
+
+=== Component selection of Solar Pi Platter board
+
+....
+- TI bq24210 Li-Ion charger supporting both high- and low-impedance power sources. Configured for a max 750 mA charge current to external battery. Support for an optional external thermistor (103AT-4 type) attached to the battery
+- PIC16F1459 PMIC/RTC. Inexpensive micro-controller that supports a USB interface so the board can appear like a CDC-class serial port to the Pi. External 32 kHz crystal to support a very simple RTC (seconds since some point) and alarm-clock functionality to be able to wake the board up at a specific time. External power button to manually turn the board on (and off). Charge status, low-battery detection (and shut-down after warning), USB power fault detection. Two analog input pins and 2 PWM output pins for simple IO functions without requiring further connection to the Pi. The analog inputs can be referenced to an internal voltage reference or the PIC VDD
+- TI tps61232 boost converter. Supplies up to 2 A @ 5volts for use by the rest of the system (USB/ethernet, Pi, Pi HAT and any attached USB devices). Note that you'll require beefy enough wiring from the battery to support this at full power output since you will be drawing 3+ A from the battery at lower battery voltages
+- LAN9514 USB Hub/Ethernet controller. Not-so inexpensive controller compatible with the Pi and supported both USB and ethernet
+- NCP382 USB power switches. Each USB connector has a separate power control allowing code running on the Pi to turn-on and off USB devices to save power. One connector has both outputs of the NCP382 ganged together for a nominal maximum output current of 2A. The other connectors are each connected to one NCP382 output for a max of 1 A current (this is the rated max of the NCP382 before it current limits)
 ....
 
 == Description of basic tests
@@ -61,7 +73,6 @@ According to python3 is installed, run these scripts to chipset radio
 (RFM95) and the TTN comunication :
 
 ....
-- test_dot_env.py to check the TTN sensor configuration and verify the TTN sensor information
 - test_rfm9x.py to check the Adafruit radio+oled Bonnet
 - test_send_lora.py to check if a data from the BMP388 can be transmitted on the TTN network application
 ....
