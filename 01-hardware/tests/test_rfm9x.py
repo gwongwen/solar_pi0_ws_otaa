@@ -3,15 +3,10 @@ Wiring Check, Pi Radio w/RFM9x
 Learn Guide: https://learn.adafruit.com/lora-and-lorawan-for-raspberry-pi
 Author: Brent Rubell for Adafruit Industries
 """
-import time
+import time, busio, board, adafruit_ssd1306, adafruit_rfm9x
 import busio
 from digitalio import DigitalInOut, Direction, Pull
 import board
-
-# import the SSD1306 module.
-import adafruit_ssd1306
-# import the RFM9x radio module.
-import adafruit_rfm9x
 
 # button A
 btnA = DigitalInOut(board.D5)

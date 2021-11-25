@@ -31,7 +31,6 @@ According to python3 is installed, run the script **test_parallel_i2c.py** to ch
 ## Test LoRa chipset radio RFM95W and the TTN application
 According to python3 is installed, run these scripts to chipset radio (RFM95) and the TTN comunication :
     
-    - test_dot_env.py to check the TTN sensor configuration and verify the TTN sensor information
     - test_rfm9x.py to check the Adafruit radio+oled Bonnet
     - test_send_lora.py to check if a data from the BMP388 can be transmitted on the TTN network application
 
