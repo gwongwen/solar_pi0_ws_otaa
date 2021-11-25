@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # test for bmp388 weather sensor 
 # version 1.0 - 19/11/21
-# version 1.1 - 11/25/21 (change while loop to for loop with 5 measures)
+# version 1.1 - 25/11/21 (change while loop to for loop with 5 measures)
 
 import time
 import board

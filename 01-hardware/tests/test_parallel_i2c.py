@@ -1,8 +1,10 @@
-from dotenv import load_dotenv
-import threading,time,subprocess,busio,board,adafruit_ssd1306,adafruit_bmp3xx,os,sys,random
+#! /usr/bin/env python3
+# test for parallel communication between sensor and radio bonnet i2c bus
+# version 1.0 - 19/11/21
+
+import time, busio, board, adafruit_ssd1306, adafruit_bmp3xx
 from digitalio import DigitalInOut, Direction, Pull
 from adafruit_tinylora.adafruit_tinylora import TTN, TinyLoRa
-from pathlib import Path
 from busio import I2C
 
 # link buttons
@@ -46,13 +48,15 @@ height = display.height
 # TinyLoRa configuration
 spi = busio.SPI(board.SCK, MOSI=board.MOSI, MISO=board.MISO)
 
-while True:
-    print("\nTemperature: %0.1f C" % (bmp.temperature + temperature_offset))
-    print("Pressure: %0.3f hPa" % bmp.pressure)
-    print("Altitude = %0.2f meters" % bmp.altitude)
+for meas in range (0,5,1):
+    msg = ''
+    msg += "Temperature: %0.1f C\n" % bmp.temperature + temperature_offset
+    msg += "Pressure: %0.3f hPa\n" % bmp.pressure
+    msg += "Altitude = %0.2f meters\n" % bmp.altitude
 
     display.fill(0)
-    display.text("Temperature: %0.1f C" % (bmp.temperature + temperature_offset), 10, 0, 1)
+    display.text(msg, 0, 0, 1)
     display.show()
+    print(msg)
 
     time.sleep(1)
