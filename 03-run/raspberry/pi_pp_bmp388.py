@@ -1,72 +1,37 @@
 #!/usr/bin/env python3
 
-import sys
-from time import sleep
+import time, busio, board, adafruit_bmp3xx, LoRaWAN
 from SX127x.LoRa import *
 from SX127x.LoRaArgumentParser import LoRaArgumentParser
 from SX127x.board_config import BOARD
-sys.path.insert(0, '/home/pi/solar_pi0_ws_otaa/04-lorawan')
 from LoRaWAN.MHDR import MHDR
+from busio import I2C
 from random import randrange
-import adafruit_bmp3xx, board
+from time import sleep
+
 
 BOARD.setup()
 parser = LoRaArgumentParser("LoRaWAN sender")
 
 class LoRaWANotaa(LoRa):
-    def __init__(self, verbose = False):
+    def __init__(verbose = False):
         super(LoRaWANotaa, self).__init__(verbose)
-
-    def on_rx_done(self):
-        print("RxDone")
-
-        self.clear_irq_flags(RxDone=1)
-        payload = self.read_payload(nocheck=True)
-
-        lorawan = LoRaWAN.new([], appkey)
-        lorawan.read(payload)
-        print(lorawan.get_payload())
-        print(lorawan.get_mhdr().get_mversion())
-
-        if lorawan.get_mhdr().get_mtype() == MHDR.JOIN_ACCEPT:
-            print("Got LoRaWAN join accept")
-            print(lorawan.valid_mic())
-            print(lorawan.get_devaddr())
-            print(lorawan.derive_nwskey(devnonce))
-            print(lorawan.derive_appskey(devnonce))
-            print("\n")
-            sys.exit(0)
-
-        print("Got LoRaWAN message continue listen for join accept")
-
+    
     def on_tx_done(self):
+        self.set_mode(MODE.STDBY)
         self.clear_irq_flags(TxDone=1)
         print("TxDone")
 
-        self.set_mode(MODE.STDBY)
-        self.set_dio_mapping([0,0,0,0,0,0])
-        self.set_invert_iq(1)
-        self.reset_ptr_rx()
-        self.set_mode(MODE.RXCONT)
-
     def start(self):
         self.tx_counter = 1
-
         lorawan = LoRaWAN.new(appkey)
         lorawan.create(MHDR.JOIN_REQUEST, {'deveui': deveui, 'appeui': appeui, 'devnonce': devnonce})
 
-        self.write_payload(lorawan.to_raw())
-        self.set_mode(MODE.TX)
-        while True:
-            sleep(1)
+def bmp388_payload():
+    pressure = bmp.pressure
+    temperature = bmp.temperature + temperature_offset
+    altitude = bmp.altitude
 
-def getPayloadMockBMP388():
-    press_val = bmp.pressure
-    temp_val = bmp.temperature + temperature_offset
-    alt_val = bmp.altitude
-    return encodePayload(press_val,temp_val,alt_val)
-
-def encodePayload(pressure,temperature,altitude):
     # encode float as int
     press_val = int(pressure * 100) 
     temp_val = int(temperature * 100)
@@ -94,18 +59,6 @@ def encodePayload(pressure,temperature,altitude):
 
     return data
 
-def sendDataTTN(data):
-    #lora.send_data(data, len(data), lora.frame_counter)
-    #lora.frame_counter += 1
-    #display.fill(0)
-    #display.text('Packet sent', 10, 0, 1)
-    #display.show()
-    lorawan = LoRaWAN.new(nwskey, appskey)
-    lorawan.create(MHDR.UNCONF_DATA_UP, {'devaddr': devaddr, 'fcnt': 1, 'data': list(map(ord, 'Python rules!')) })
-
-    self.write_payload(lorawan.to_raw(data))
-    self.set_mode(MODE.TX)
-
 # init
 deveui = [0x00, 0x47, 0x64, 0xB1, 0xAB, 0xC6, 0x4F, 0x7C]
 appeui = [0x70, 0xB3, 0xD5, 0x7E, 0xF0, 0x00, 0x51, 0x34]
@@ -124,7 +77,7 @@ lora.set_sync_word(0x34)
 lora.set_rx_crc(True)
 
 # create the i2c interface
-i2c = board.I2C()   # uses board.SCL and board.SDA
+i2c = busio.I2C(board.SCL, board.SDA)   # uses board.SCL and board.SDA
 
 # create library object using our Bus I2C port
 bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
@@ -132,17 +85,16 @@ bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
 # change this to match the location's pressure (hPa) at sea level
 bmp.sea_level_pressure = 1013.25
 
+# no IIR filter, no osr for lowest power (case of weather monitoring)
 bmp.pressure_oversampling = 1
 bmp.temperature_oversampling = 1
 
-# you will usually have to add an offset to account for the temperature of
-# the sensor. This is usually around 5 degrees but varies by use. Use a
-# separate temperature sensor to calibrate this one.
+# calibration of temperature sensor
 temperature_offset = -5
 
-for meas in range (0, 15, 1):
-    packet = None
-    sendDataTTN(getPayloadMockBMP388())
-    print("packet sent!")
-
-    time.sleep(2)
+for ind in range (0, 15, 1):
+    meas = bmp388_payload()
+    lora.start()
+    lora.write_payload(data)
+    lora.set_mode(MODE.TX)
+    lora.set_mode(MODE.RXCONT)
