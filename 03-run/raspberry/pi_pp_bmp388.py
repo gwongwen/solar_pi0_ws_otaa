@@ -14,7 +14,7 @@ BOARD.setup()
 parser = LoRaArgumentParser("LoRaWAN sender")
 
 class LoRaWANotaa(LoRa):
-    def __init__(verbose = False):
+    def __init__(self, verbose = False):
         super(LoRaWANotaa, self).__init__(verbose)
     
     def on_tx_done(self):
@@ -25,7 +25,9 @@ class LoRaWANotaa(LoRa):
     def start(self):
         self.tx_counter = 1
         lorawan = LoRaWAN.new(appkey)
-        lorawan.create(MHDR.JOIN_REQUEST, {'deveui': deveui, 'appeui': appeui, 'devnonce': devnonce})
+        lorawan.create(MHDR.JOIN_REQUEST, {'deveui': deveui, 'appeui': appeui, 'devnonce': devnonce, 'data':list(meas)})
+        self.write_payload(lorawan.to_raw())
+        self.set_mode(MODE.TX)
 
 def bmp388_payload():
     pressure = bmp.pressure
@@ -92,9 +94,9 @@ bmp.temperature_oversampling = 1
 # calibration of temperature sensor
 temperature_offset = -5
 
+# 2b array to store sensor data
+data = bytearray(9)
+
 for ind in range (0, 15, 1):
     meas = bmp388_payload()
     lora.start()
-    lora.write_payload(data)
-    lora.set_mode(MODE.TX)
-    lora.set_mode(MODE.RXCONT)
