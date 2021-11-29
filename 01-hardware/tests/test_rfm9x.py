@@ -4,7 +4,7 @@ Learn Guide: https://learn.adafruit.com/lora-and-lorawan-for-raspberry-pi
 Author: Brent Rubell for Adafruit Industries
 """
 import time, busio, board, adafruit_ssd1306, adafruit_rfm9x
-from digitalio import DigitalInOut
+from digitalio import DigitalInOut, Direction, Pull
 from busio import I2C, SPI
 from time import sleep
 
