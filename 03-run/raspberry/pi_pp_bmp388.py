@@ -32,32 +32,24 @@ class LoRaWANotaa(LoRa):
 def bmp388_payload():
     pressure = bmp.pressure
     temperature = bmp.temperature + temperature_offset
-    altitude = bmp.altitude
 
     # encode float as int
     press_val = int(pressure * 100) 
     temp_val = int(temperature * 100)
-    alt_val = int(altitude * 100)
     abs_temp_val = abs(temp_val)
 
     # encode payload as bytes
-    # pressure (needs 3 bytes)
-    data[0] = (press_val >> 16) & 0xff
-    data[1] = (press_val >> 8) & 0xff
-    data[2] = press_val & 0xff
+    # pressure (needs 2 bytes)
+    data[0] = (press_val >> 8) & 0xff
+    data[1] = press_val & 0xff
 
     # temperature (needs 3 bytes 327.67 max value) (signed int)
     if(temp_val < 0):
-        data[3] = 1 & 0xff
+        data[2] = 1 & 0xff
     else:
-        data[3] = 0 & 0xff
-    data[4] = (abs_temp_val >> 8) & 0xff
-    data[5] = abs_temp_val & 0xff
-
-    # altitude (needs 3 bytes)
-    data[6] = (alt_val >> 16) & 0xff
-    data[7] = (alt_val >> 8) & 0xff
-    data[8] = alt_val & 0xff
+        data[2] = 0 & 0xff
+    data[3] = (abs_temp_val >> 8) & 0xff
+    data[4] = abs_temp_val & 0xff
 
     return data
 
@@ -95,7 +87,7 @@ bmp.temperature_oversampling = 1
 temperature_offset = -5
 
 # 2b array to store sensor data
-data = bytearray(9)
+data = bytearray(5)
 
 for ind in range (0, 15, 1):
     meas = bmp388_payload()
