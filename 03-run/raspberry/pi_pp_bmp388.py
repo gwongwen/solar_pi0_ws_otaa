@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python3
+# run: send physical data from sensor to LoRaWAN TTN by OTAA identification
+# version 1.1 - 14/12/21
 
 import time, busio, board, adafruit_bmp3xx, LoRaWAN
 from SX127x.LoRa import *

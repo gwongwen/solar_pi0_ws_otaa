@@ -1,5 +1,5 @@
 #! /usr/bin/env python3
-# test: send join request from sensor to LoRaWAN TTN by OTAA identification
+# test: send join request to LoRaWAN TTN by OTAA identification
 # version 1.0 - 23/11/21
 
 import time, board, LoRaWAN
