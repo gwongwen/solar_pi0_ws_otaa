@@ -21,7 +21,7 @@ you have to flash it into your raspberry pi sd card. For this, open a
 terminal :
 
 ....
-- diskutil disk --> you can see the number of the  diskx (x is the number)
+- diskutil list --> you can see the number of the  diskx (x is the number)
 - diskutil unmountDisk /dev/diskx
 - sudo dd bs=1 if=/path_to_folder/2021-05-07-raspios-buster-armhf-lite.img of=/dev/diskx
 ....
