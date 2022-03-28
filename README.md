@@ -1,18 +1,23 @@
 # Solar Powered Weather Station
 
-## Description (to improve)
-In this project, we seek to make a fully autonomous control unit that will at the same time communicate sensor data through LoRa and receive LoRa packages excersing as LoRa Gateway. Also, the periodicity of this process will change depending on external factors (battery %, sunshine... ) and the LoRa Messages content.
+## Description
+In this project, we seek to make a fully autonomous control unit that will at the same time communicate sensor data through LoRa and receive LoRa packages excersing as LoRa Gateway. Also, the periodicity of this process will change depending on external factors (battery %, sunshine... ) and the LoRa Messages content. Some experimemts are also envisaged in order to:
+        - determine the most accurate consumption of a LoraWAN send packet
+        - determine the consumption of Pi Platter board
+        - determine the consumtption of differents services of Raspbian OS
+        - optimize services and numbers of LoraWAN send packet for a very low consumption
+        - design middleware scenarii
 
 ## Raspbian OS configuration 
 
-### Download Raspberry Pi OS Lite and flash (on MacOs BigSur)
+### Download Raspberry Pi OS Lite and flash (on MacOs Monterey v12.3)
 
 At first, go to the raspberry pi official site and download the image you want to upload into the raspberry (https://www.raspberrypi.org/downloads/raspberry-pi-os/). For this tutorial, we are going to use the Raspberry Pi OS (32-bit) Lite image (the May 2021 version in our case). Once you have downloaded the image, you have to flash it into your raspberry pi sd card. For this, open 
 a terminal :
 
-    - diskutil disk --> you can see the number of the  diskx (x is the number)
+    - diskutil list --> you can see the number of the  diskx (x is the number) at external, physical line
     - diskutil unmountDisk /dev/diskx
-    - sudo dd bs=1 if=/path_to_folder/2021-05-07-raspios-buster-armhf-lite.img of=/dev/diskx
+    - sudo dd bs=1M if=/path_to_folder/2021-05-07-raspios-buster-armhf-lite.img of=/dev/diskx
 
 Now, you have two choice : you can work with SSH (you work with a personal wifi network) or not (this is the case if you work at university with eduroam wifi network).
 
@@ -31,7 +36,7 @@ on the same terminal :
     - sudo nano /Volumes/boot/wpa_supplicant.conf
     add this lines to this file :
             ```
-            country=FR (this has to be changed to your county code)
+            country=FR (this has to be changed to your country code)
             ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
             update_config=1
 
@@ -54,9 +59,9 @@ Once the raspberry is fully inited, you can ssh to your raspberry IP and all sho
             change XBLAYOUT="gb" to "fr"
         - sudo nano /etc/wpa-supplicant/wpa_supplicant.conf
             ```
-            country=FR (this has to be changed to your county code)
             ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
             update_config=1
+            country=FR (this has to be changed to your country code)
 
             network={
                     ssid="eduroam"
@@ -73,10 +78,12 @@ Once the raspberry is fully inited, you can ssh to your raspberry IP and all sho
             ```
         - sudo nano /etc/network/interfaces
            ```
-           allow-hotplug=wlan0
+           auto wlan0
+           allow-hotplug wlan0
            iface wlan0 inet dhcp
-           wpa-conf /etc/wpa-supplicant/wpa_supplicant.conf
-           wpa-driver wext
+                pre-up wpa_supplicant -B -Dwext -i wlan0 -c/etc/wpa_supplicant/wpa_supplicant.conf
+	        post-down killall -q wpa_supplicant
+                wpa-driver wext
            ```
         - remove dhcpcd (2 dhcp clients installed on buster version !) --> sudo apt-get remove dhcpcd5
         - cp /usr/share/zoneinfo/Europe/Paris/ /etc/localtime if you work in France
@@ -84,8 +91,11 @@ Once the raspberry is fully inited, you can ssh to your raspberry IP and all sho
                 1.      system options
                 S5.     Boot/Autologin
                 B2.     Console Auto Login
-                Ok -->  Finish --> reboot (yes)
-
+                Ok -->  Finish --> reboot (no)
+                5.      Localisation Options
+                L4.     WLAN Country (select your country)
+                OK -->  Finish --> reboot
+                
 Now you are inside you will need to install one only dependency by yourself. To be able to access the github repo (and then the install scripts), you have to install git (**sudo apt-get install git**, you might need to apt-get update before).
 
 ## Initialisation and process
