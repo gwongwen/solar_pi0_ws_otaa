@@ -15,8 +15,8 @@
 echo beginning of script
 
 # test of the transmission
-cd /home/pi/solar_pi0_ws_tutorial/01-hardware/tests/
-sudo python3 test_send_lora.py
+cd /home/pi/solar_pi0_ws_otaa/01-hardware/tests/
+sudo python3 test_send_ttn_abp.py
 
 # times to start and stop each date are military format: HHMM
 STARTOFDAY=0800
@@ -69,12 +69,7 @@ if [ $BATT -lt 3.45 ]; then
 else
     echo "run python script to read sensor and send data to TTN"
     # initialisation of our raspberry pi zero
-	cd /home/pi/solar_pi0_ws_youpi/03-run/raspi_side/gateway_mode
-	bash run_gateway_node.js
-	cd ..
-	# run measurement program and enable mqtt server
-	cd /home/pi/solar_pi0_ws_youpi/03-run/raspi_side/sensor_mode
-	sudo mqtt_client.py
+	cd /home/pi/solar_pi0_ws_otaa/03-run/raspberry
     sudo python pi_pp_bmp388.py
 fi
 
