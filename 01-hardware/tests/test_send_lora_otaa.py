@@ -1,9 +1,11 @@
 #! /usr/bin/env python3
 # test: send join request to LoRaWAN TTN by OTAA identification
 # version 1.0 - 23/11/21
+# version 1.1 - 20/09/2022 (change LoRaWAN import library)
 
-import time, board, LoRaWAN
+import time, board
 from time import sleep
+from LoRaWAN import *
 from SX127x.LoRa import *
 from SX127x.board_config import BOARD
 from LoRaWAN.MHDR import MHDR
