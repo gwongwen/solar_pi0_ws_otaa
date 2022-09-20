@@ -1,7 +1,9 @@
+
 #! /usr/bin/env python3
 # test for bmp388 weather sensor 
 # version 1.0 - 19/11/21
 # version 1.1 - 25/11/21 (change while loop to for loop with 5 measures)
+# version 1.2 - 20/09/22 (add comments)
 
 import time, busio, board, adafruit_bmp3xx
 from busio import I2C
@@ -16,7 +18,7 @@ bmp = adafruit_bmp3xx.BMP3XX_I2C(i2c)
 # change this to match the location's pressure (hPa) at sea level
 bmp.sea_level_pressure = 1013.25
 
-# no IIR filter, no osr for lowest power (case of weather monitoring)
+# no IIR filter, no OSR for lowest power (case of weather monitoring)
 bmp.pressure_oversampling = 1
 bmp.temperature_oversampling = 1
 
@@ -26,8 +28,9 @@ bmp.temperature_oversampling = 1
 temperature_offset = -5
 
 for meas in range (0,5,1):
+    # adafruit circuit python format: pressure -> 6.4f and temperature 5.2f and altitude -> no value
     print("\nTemperature: %0.1f C" % (bmp.temperature + temperature_offset))
     print("Pressure: %0.3f hPa" % bmp.pressure)
     print("Altitude: %0.2f meters" % bmp.altitude)
-    time.sleep(1)
+    time.sleep(2)
 
