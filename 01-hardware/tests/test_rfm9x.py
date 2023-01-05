@@ -3,6 +3,7 @@
 # version 1.0 - 19/11/21
 # version 1.1 - 20/07/22 (add a send packet code)
 # version 1.2 - 20//09/22 (add RFM9x configurations for tests)
+# version 1.3 - 05/01/23 (poweroff the ssd1306 display after test)
 
 import time
 import busio
@@ -11,6 +12,7 @@ import board
 
 # import the SSD1306 module.
 import adafruit_ssd1306
+
 # import the RFM9x radio module.
 import adafruit_rfm9x
 
@@ -59,10 +61,11 @@ except RuntimeError as error:
 display.show()
 
 # Apply new modem config settings to the radio to improve its effective range
-rfm9x.signal_bandwidth = 62500
+rfm9x.signal_bandwidth = 125000
 rfm9x.coding_rate = 4/5
 rfm9x.spreading_factor = 8
 rfm9x.enable_crc = True
+rfm9x.tx_power = 17
 
 while True:
     # clear the image
@@ -91,3 +94,5 @@ while True:
 
     display.show()
     time.sleep(0.1)
+
+display.poweroff()
