@@ -2,6 +2,7 @@
 # test for parallel communication between sensor and radio bonnet i2c bus
 # version 1.0 - 19/11/21
 # version 1.1 - 25/11/21 (delete link buttons)
+# version 1.2 - 05/01/23 (poweroff the ssd1306 display after test)
 
 import time, busio, board, adafruit_ssd1306, adafruit_bmp3xx
 from digitalio import DigitalInOut
@@ -48,3 +49,5 @@ for meas in range (0,5,1):
     print(msg)
 
     time.sleep(1)
+
+display.poweroff()
