@@ -5,6 +5,8 @@
 # version 1.2 - 18/11/21 ()
 # version 1.3 - 21/07/22 (add commands to disable BLE, HDMI and LED)
 # version 1.4 - 20/09/22 (add python libraries)
+# version 1.5 - 05/01/23 (add stress packets for CPU testing)
+# version 1.6 - 05/01/23 (display current CPU load and CPU temperature)
 
 if [ "$EUID" -ne 0 ]
   then echo "Please this script needs for root authorisations, execute it as root."
@@ -30,9 +32,12 @@ gcc -o ppd ppd.c -ludev
 sudo mv ppd /usr/local/bin
 cd ../..
 
+# packets to test RPi CPU for stress testing
+sudo apt-get -y install stress s-tui
+
 # python install and dependencies
 sudo apt-get install -y python3-pip python3-dev i2c-tools python3-smbus python3-spidev python3-setuptools
-sudo pip3 install python-dotenv
+sudo pip3 install python-dotenv python3-rpi.gpio
 
 # LoRa Bonnet dependencies 
 sudo pip3 install adafruit-circuitpython-ssd1306
